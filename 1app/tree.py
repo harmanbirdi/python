@@ -61,21 +61,23 @@ class Tree:
 
         if dirlist:
             for fle in dirlist:
+                full_path = os.path.join(dname, fle)
+
                 if fle.startswith('.'):  # Ignore hidden files and directories
                     continue
-                elif os.path.isdir(os.path.join(dname, fle)):
+                elif os.path.isdir(full_path):
                     print separator * Tree.depth,
                     print Colors.HEADER + "%s/" % fle + Colors.ENDC
                     Tree.depth += 1
-                    self.process_tree(os.path.join(dname, fle), extn)
-                elif os.path.isfile(os.path.join(dname, fle)):
+                    self.process_tree(full_path, extn)
+                elif os.path.isfile(full_path):
                     try:
                         (fname, ext) = fle.split('.')
                         print separator * Tree.depth,
                         print Colors.OKBLUE + "%s" % fle + Colors.ENDC
 
                         if ext == extn:
-                            Tree.print_file(os.path.join(dname, fle))
+                            Tree.print_file(full_path)
 
                     except ValueError:
                         pass
