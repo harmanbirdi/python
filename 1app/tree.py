@@ -81,7 +81,10 @@ class Tree:
                         pass
 
             Tree.depth -= 1
-            return
+        else:
+            Tree.depth -= 1
+
+        return
 
 
 # Main starts here
