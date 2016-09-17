@@ -29,12 +29,17 @@ class Colors:
         pass
 
 
+# Tree class to print out a directory structure. It also prints out the contents of
+# text (.txt) files by default unless a different extension is provided.
+# TODO: Figure out if the file is of text type and accept only that extension
+# TODO: For other show message saying its a binary file.
 class Tree:
     depth = 1  # The depth of the tree
 
     def __init__(self):
         pass
 
+    # This method just prints out the contents of the file
     @staticmethod
     def print_file(fle):
         msg = "START: File contents: %s" % fle
@@ -48,23 +53,25 @@ class Tree:
         print msg
         print '-' * len(msg)
 
+    # This method processes the directory recursively and prints out all files that
+    # match extension type of files
     def process_tree(self, dname, extn='txt'):
-
         dirlist = os.listdir(dname)
+        separator = '    '
 
         if dirlist:
             for fle in dirlist:
                 if fle.startswith('.'):  # Ignore hidden files and directories
                     continue
                 elif os.path.isdir(os.path.join(dname, fle)):
-                    print '\t' * Tree.depth,
+                    print separator * Tree.depth,
                     print Colors.HEADER + "%s/" % fle + Colors.ENDC
                     Tree.depth += 1
                     self.process_tree(os.path.join(dname, fle), extn)
                 elif os.path.isfile(os.path.join(dname, fle)):
                     try:
                         (fname, ext) = fle.split('.')
-                        print '\t' * Tree.depth,
+                        print separator * Tree.depth,
                         print Colors.OKBLUE + "%s" % fle + Colors.ENDC
 
                         if ext == extn:
