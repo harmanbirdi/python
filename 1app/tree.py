@@ -11,6 +11,7 @@
 
 import os
 import sys
+import commands
 from optparse import OptionParser
 
 
@@ -71,13 +72,18 @@ class Tree:
                     Tree.depth += 1
                     self.process_tree(full_path, extn)
                 elif os.path.isfile(full_path):
+                    mime = commands.getoutput('file %s' % full_path)
+
                     try:
                         (fname, ext) = fle.split('.')
                         print separator * Tree.depth,
                         print Colors.OKBLUE + "%s" % fle + Colors.ENDC
 
-                        if ext == extn:
-                            Tree.print_file(full_path)
+                        if ext == extn and 'ASCII' in mime:
+                             Tree.print_file(full_path)
+                        elif ext == extn and 'ASCII' not in mime:
+                            print separator * (Tree.depth + 1),
+                            print Colors.FAIL +'ERROR: Extension matches but file is not of text/plain type' + Colors.ENDC
 
                     except ValueError:
                         pass

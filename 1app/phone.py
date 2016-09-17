@@ -24,7 +24,7 @@
 import os
 import sys
 import re
-import mimetypes
+import commands
 from optparse import OptionParser
 
 
@@ -92,9 +92,9 @@ class Tree:
                     Tree.depth += 1
                     self.process_tree(full_path)
                 elif os.path.isfile(full_path):
-                    mime = mimetypes.guess_type(full_path)
+                    mime = commands.getoutput('file %s' % full_path)
 
-                    if mime[0] == 'text/plain':  # Look in only plain text files
+                    if 'ASCII' in mime:  # Look in only plain text files
                         try:
                             phones = Tree.normalize(Tree.find_phones(full_path))
 
