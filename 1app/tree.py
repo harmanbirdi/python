@@ -31,9 +31,8 @@ class Colors:
 
 
 # Tree class to print out a directory structure. It also prints out the contents of
-# text (.txt) files by default unless a different extension is provided.
-# TODO: Figure out if the file is of text type and accept only that extension
-# TODO: For other show message saying its a binary file.
+# text (.txt) files by default unless a different extension is provided and file is
+# of ASCII type.
 class Tree:
     depth = 1  # The depth of the tree
 
@@ -80,10 +79,10 @@ class Tree:
                         print Colors.OKBLUE + "%s" % fle + Colors.ENDC
 
                         if ext == extn and 'ASCII' in mime:
-                             Tree.print_file(full_path)
+                            Tree.print_file(full_path)
                         elif ext == extn and 'ASCII' not in mime:
                             print separator * (Tree.depth + 1),
-                            print Colors.FAIL +'ERROR: Extension matches but file is not of text/plain type' + Colors.ENDC
+                            print Colors.FAIL + 'ERROR: Extension matches but file is not of text type' + Colors.ENDC
 
                     except ValueError:
                         pass
