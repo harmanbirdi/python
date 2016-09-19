@@ -14,9 +14,11 @@ import sys
 import commands
 from optparse import OptionParser
 
-
-# To colorize the output - assume terminal can handle this for now.
+# Assume terminal can handle this for now.
 class Colors:
+    """
+    To colorize the output on the terminal
+    """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -30,18 +32,22 @@ class Colors:
         pass
 
 
-# Tree class to print out a directory structure. It also prints out the contents of
-# text (.txt) files by default unless a different extension is provided and file is
-# of ASCII type.
 class Tree:
+    """
+    Tree class to print out a directory structure. It also prints out the contents of
+    text (.txt) files by default unless a different extension is provided and file is
+    of ASCII type.
+    """
     depth = 1  # The depth of the tree
 
     def __init__(self):
         pass
 
-    # This method just prints out the contents of the file
     @staticmethod
     def print_file(fle):
+        """
+        This method just prints out the contents of the file
+        """
         msg = "START: File contents: %s" % fle
         print '-' * len(msg)
         print msg
@@ -53,9 +59,15 @@ class Tree:
         print msg
         print '-' * len(msg)
 
-    # This method processes the directory recursively and prints out all files that
-    # match extension type of files
     def process_tree(self, dname, extn='txt'):
+        """
+        This method processes the directory recursively and prints out all files that
+        match extension type of files.
+
+        :param dname:
+        :param extn:
+        :return:
+        """
         dirlist = os.listdir(dname)
         separator = '    '
 

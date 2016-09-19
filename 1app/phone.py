@@ -43,10 +43,12 @@ class Colors:
         pass
 
 
-# Tree class to recursively process all text/plain files in a directory structure.
-# It also prints out the phone number matches in all of those files that have
-# 10 digit numbers in a normalized manner
 class Tree:
+    """
+    Tree class to recursively process all text/plain files in a directory structure.
+    It also prints out the phone number matches in all of those files that have
+    10 digit numbers in a normalized manner.
+    """
     depth = 1  # The depth of the tree
 
     def __init__(self):
@@ -54,6 +56,13 @@ class Tree:
 
     @staticmethod
     def find_phones(fle):
+        """
+        This method finds all the phones that match on a line (only one per line)
+        :param fle:
+            Full path to the input file
+        :return:
+            List of phone numbers
+        """
         digits = []
 
         fh = open(fle)
@@ -67,9 +76,15 @@ class Tree:
 
         return [phone for phone in digits if len(phone) == 10]
 
-    # This method normalizes and returns phone list to (xxx) xxx-xxxx format
     @staticmethod
     def normalize(phones):
+        """
+        This method normalizes and returns phone list to (xxx) xxx-xxxx format
+        :param phones:
+            List of phone numbers that needs to be normalized.
+        :return:
+            List of normalized phone numbers.
+        """
         fones = []
 
         for phone in phones:
@@ -77,9 +92,15 @@ class Tree:
 
         return fones
 
-    # This method processes the directory recursively and prints out all files that
-    # match extension type of files
     def process_tree(self, dname):
+        """
+        This method processes the directory recursively and prints out all files that
+        match extension type of files
+        :param dname:
+            The full path to the directory
+        :return:
+            None
+        """
         dirlist = os.listdir(dname)
         separator = ' ' * 4  # Tabs are showing up as 8 chars on terminal, so using 4 spaces instead - its absolute
 
