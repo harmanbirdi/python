@@ -129,9 +129,7 @@ class Tree:
                     else:
                         pass
 
-            Tree.depth -= 1
-        else:
-            Tree.depth -= 1
+        Tree.depth -= 1
 
         return
 
