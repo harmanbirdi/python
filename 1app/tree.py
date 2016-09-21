@@ -58,6 +58,7 @@ class Tree:
         print '-' * len(msg)
         print msg
         print '-' * len(msg)
+        fh.close()
 
     def process_tree(self, dname, extn='txt'):
         """

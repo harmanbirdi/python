@@ -74,6 +74,8 @@ class Tree:
         for line in lines:
             digits.append(re.sub('\D', '', line))
 
+        fh.close()
+
         return [phone for phone in digits if len(phone) == 10]
 
     @staticmethod
