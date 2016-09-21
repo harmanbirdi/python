@@ -15,125 +15,89 @@
 #                   o if the script can reformat the phone number into a standard, normalized form
 #                   o if the script can also detect possible phone numbers with country codes
 #                     e.g. +20 010 012 5486
+# Implementation: Uses the Tree class with the optional function processing capability for each file.
+#                 The print_phones function is passes to the Tree class, which prints the tree and runs
+#                 print_phones function for text (ASCII) files, but displays errors for binary files.
 # More Info   : Asked by Nour for 1app phone screen interview
 # __author__  : Harman Birdi
 # Date        : Sep 16, 2016
 # TODO        : Detect phone numbers with its country code
 #
 
-import os
 import sys
 import re
 import commands
+
+from colors import Colors
+from tree import Tree
 from optparse import OptionParser
 
 
-# To colorize the output - assume terminal can handle this for now.
-class Colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-    def __init__(self):
-        pass
-
-
-class Tree:
+def find_phones(fle):
     """
-    Tree class to recursively process all text/plain files in a directory structure.
-    It also prints out the phone number matches in all of those files that have
-    10 digit numbers in a normalized manner.
+    This method finds all the phones that match on a line (only one per line)
+    :param fle:
+        Full path to the input file
+    :return:
+        List of phone numbers
     """
-    depth = 1  # The depth of the tree
+    digits = []
 
-    def __init__(self):
+    fh = open(fle)
+    lines = fh.readlines()
+
+    # Remove all non-digits from the line - quick hack instead of doing various pattern recognition
+    # for phone numbers. Proper regex would be better way to go. It returns only first 10 numbers
+    # matched on each line.
+    for line in lines:
+        digits.append(re.sub('\D', '', line))
+
+    fh.close()
+
+    return [phone for phone in digits if len(phone) == 10]
+
+
+def normalize(phones):
+    """
+    This method normalizes and returns phone list to (xxx) xxx-xxxx format
+    :param phones:
+        List of phone numbers that needs to be normalized.
+    :return:
+        List of normalized phone numbers.
+    """
+    fones = []
+
+    for phone in phones:
+        fones.append('(%s) %s-%s' % (phone[0:3], phone[3:6], phone[6:]))
+
+    return fones
+
+
+def print_phones(**kwargs):
+    """
+    Function passed to tree which is called for a file by the Tree.process_tree() method
+    :param kwargs:
+    :return:
+    """
+    full_path = kwargs['full_path']
+    separator = kwargs['separator']
+    depth = kwargs['depth']
+
+    mime = commands.getoutput('file %s' % full_path)
+
+    try:
+        if 'empty' in mime:
+            pass
+        elif 'text' in mime:
+            phones = normalize(find_phones(full_path))
+            for phone in phones:
+                print separator * (Tree.depth + 1), phone
+        else:
+            print separator * (depth + 1),
+            print Colors.FAIL + 'ERROR: File is of binary type' + Colors.ENDC
+
+    except ValueError:
         pass
-
-    @staticmethod
-    def find_phones(fle):
-        """
-        This method finds all the phones that match on a line (only one per line)
-        :param fle:
-            Full path to the input file
-        :return:
-            List of phone numbers
-        """
-        digits = []
-
-        fh = open(fle)
-        lines = fh.readlines()
-
-        # Remove all non-digits from the line - quick hack instead of doing various pattern recognition
-        # for phone numbers. Proper regex would be better way to go. It returns only first 10 numbers
-        # matched on each line.
-        for line in lines:
-            digits.append(re.sub('\D', '', line))
-
-        fh.close()
-
-        return [phone for phone in digits if len(phone) == 10]
-
-    @staticmethod
-    def normalize(phones):
-        """
-        This method normalizes and returns phone list to (xxx) xxx-xxxx format
-        :param phones:
-            List of phone numbers that needs to be normalized.
-        :return:
-            List of normalized phone numbers.
-        """
-        fones = []
-
-        for phone in phones:
-            fones.append('(%s) %s-%s' % (phone[0:3], phone[3:6], phone[6:]))
-
-        return fones
-
-    def process_tree(self, dname):
-        """
-        This method processes the directory recursively and prints out all files that
-        match extension type of files
-        :param dname:
-            The full path to the directory
-        :return:
-            None
-        """
-        dirlist = os.listdir(dname)
-        separator = ' ' * 4  # Tabs are showing up as 8 chars on terminal, so using 4 spaces instead - its absolute
-
-        if dirlist:
-            for fle in dirlist:
-                full_path = os.path.join(dname, fle)
-                if fle.startswith('.'):  # Ignore hidden files and directories
-                    continue
-                elif os.path.isdir(full_path):
-                    Tree.depth += 1
-                    self.process_tree(full_path)
-                elif os.path.isfile(full_path):
-                    mime = commands.getoutput('file %s' % full_path)
-
-                    if 'ASCII' in mime:  # Look in only plain text files
-                        try:
-                            phones = Tree.normalize(Tree.find_phones(full_path))
-
-                            if phones:
-                                print separator * Tree.depth,
-                                print Colors.OKBLUE + '%s' % full_path + Colors.ENDC
-                                for phone in phones:
-                                    print separator * (Tree.depth + 1), phone
-                        except ValueError:
-                            pass
-                    else:
-                        pass
-
-        Tree.depth -= 1
-
-        return
 
 
 # Main starts here
@@ -151,4 +115,4 @@ if __name__ == '__main__':
 
     dirname = options.dirname
     tree = Tree()
-    tree.process_tree(dirname)
+    tree.process_tree(dirname, func=print_phones)

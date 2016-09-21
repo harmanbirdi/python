@@ -2,8 +2,7 @@
 
 #
 # Description : Print the directory tree of a given directory using any scripting language
-#              (i.e. anything *except* for a Bash script or a plain shell command). If the file
-#              ends in '.txt', also print its contents line-by-line.
+#              (i.e. anything *except* for a Bash script or a plain shell command).
 # More Info   : Asked by Nour for 1app phone screen interview
 # __author__  : Harman Birdi
 # Date        : Sep 16, 2016
@@ -11,25 +10,8 @@
 
 import os
 import sys
-import commands
+from colors import Colors
 from optparse import OptionParser
-
-# Assume terminal can handle this for now.
-class Colors:
-    """
-    To colorize the output on the terminal
-    """
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-    def __init__(self):
-        pass
 
 
 class Tree:
@@ -43,30 +25,20 @@ class Tree:
     def __init__(self):
         pass
 
-    @staticmethod
-    def print_file(fle):
-        """
-        This method just prints out the contents of the file
-        """
-        msg = "START: File contents: %s" % fle
-        print '-' * len(msg)
-        print msg
-        print '-' * len(msg)
-        fh = open(fle)
-        print ''.join(fh.readlines())
-        msg = "END: File contents: %s" % fle
-        print '-' * len(msg)
-        print msg
-        print '-' * len(msg)
-        fh.close()
-
-    def process_tree(self, dname, extn='txt'):
+    def process_tree(self, dname, extn='txt', func=None):
         """
         This method processes the directory recursively and prints out all files that
         match extension type of files.
 
         :param dname:
         :param extn:
+        :param func:
+            An optional function can be passed in for processing a file that can utilize the following
+            keyword parameters.
+                full_path: Full path to the file
+                depth: The tree depth at which this file was found
+                extn: Extension of the file, in case matches need to be done against a particular type of file
+                separator: Spacing needed to preserve padded output, if needed
         :return:
         """
         dirlist = os.listdir(dname)
@@ -82,28 +54,17 @@ class Tree:
                     print separator * Tree.depth,
                     print Colors.HEADER + "%s/" % fle + Colors.ENDC
                     Tree.depth += 1
-                    self.process_tree(full_path, extn)
+                    self.process_tree(full_path, extn, func)
                 elif os.path.isfile(full_path):
-                    mime = commands.getoutput('file %s' % full_path)
+                    print separator * Tree.depth,
+                    print Colors.OKBLUE + "%s" % fle + Colors.ENDC
 
-                    try:
-                        (fname, ext) = fle.split('.')
-                        print separator * Tree.depth,
-                        print Colors.OKBLUE + "%s" % fle + Colors.ENDC
-
-                        if ext == extn and 'ASCII' in mime:
-                            Tree.print_file(full_path)
-                        elif ext == extn and 'ASCII' not in mime:
-                            print separator * (Tree.depth + 1),
-                            print Colors.FAIL + 'ERROR: Extension matches but file is not of text type' + Colors.ENDC
-
-                    except ValueError:
-                        pass
+                    if func is not None:
+                        func(full_path=full_path, depth=Tree.depth, extn=extn, separator=separator)
 
         Tree.depth -= 1
 
         return
-
 
 # Main starts here
 if __name__ == '__main__':
