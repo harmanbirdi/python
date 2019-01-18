@@ -1,4 +1,4 @@
-#!usr/bin.env python
+#!/usr/bin/env python
 
 #
 # Description : Print the directory tree of a given directory using any scripting language
