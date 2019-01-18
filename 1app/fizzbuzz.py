@@ -1,4 +1,4 @@
-#!usr/bin.env python
+#!usr/bin/env python
 
 #
 # Description : You have a list of numbers from -50 to 50; please write code that traverses this list
