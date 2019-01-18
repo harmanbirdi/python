@@ -1,4 +1,4 @@
-#!usr/bin.env python
+#!/usr/bin/env python
 
 #
 # Description : Let's say I have some files and sub-directories in a directory tree.
